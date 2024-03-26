@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:project_library/core/res/res.dart';
+import 'package:project_library/core/responsive/header/curvature_responsive.dart';
+import 'package:project_library/core/responsive/header/position_responsive.dart';
+import 'package:project_library/models/menu_item.dart';
+import 'package:project_library/widgets/button/hamburguer_button.dart';
+import 'package:project_library/widgets/button/language_toggle_button.dart';
+import 'package:project_library/widgets/title/main_title.dart';
 
 class TopHeaderImage extends StatelessWidget {
   final Color containerColor;
@@ -20,11 +28,47 @@ class TopHeaderImage extends StatelessWidget {
       color: containerColor,
       child: Stack(
         children: [
+          Positioned(
+            top: ResponsivePositioning.topMainTitle(context),
+            left: ResponsivePositioning.leftMainTitle(context),
+            child: const MainTitle(
+              first: 'Area de contenido',
+              secondary: 'Guias de curriculum',
+            ),
+          ),
+          Positioned(
+            right: ResponsivePositioning.rightWidgets(context),
+            top: ResponsivePositioning.topRightWidgets(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const LanguageToggleButton(),
+                UISizedBox.gapH10,
+                HamburguerButton(
+                  menuItems: [
+                    MenuItem(
+                      title: 'Google',
+                      link: 'https://google.com',
+                    ),
+                    MenuItem(
+                      title: 'Flutter',
+                      link: 'https://flutter.dev',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
           Align(
-            alignment: Alignment.bottomCenter, // Alinea el semicírculo en la parte superior interna del contenedor
+            alignment: Alignment
+                .bottomCenter, // Alinea el semicírculo en la parte superior interna del contenedor
             child: CustomPaint(
-              size: Size(double.infinity, height / 2), // Tamaño ajustado para el semicírculo
-              painter: _SemicirclePainter(color: semicircleColor),
+              size: Size(double.infinity,
+                  height / 2), // Tamaño ajustado para el semicírculo
+              painter: _SemicirclePainter(
+                color: semicircleColor,
+                context: context,
+              ),
             ),
           ),
         ],
@@ -35,8 +79,9 @@ class TopHeaderImage extends StatelessWidget {
 
 class _SemicirclePainter extends CustomPainter {
   final Color color;
+  final BuildContext context; // Necesario para acceder a MediaQuery
 
-  _SemicirclePainter({required this.color});
+  _SemicirclePainter({required this.color, required this.context});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -44,12 +89,18 @@ class _SemicirclePainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
 
-    // Dibujo del semicírculo con la curvatura hacia arriba
+    // Obtiene el factor de curvatura basado en el tamaño de pantalla
+    double curveHeightFactor =
+        ResponsiveCurvature.getCurveHeightFactor(context);
+
+    // Dibujo del semicírculo con ajuste de curvatura
     final path = Path()
       ..moveTo(0, size.height)
       ..quadraticBezierTo(
-        size.width / 2, size.height * -0.5, // Punto de control ajustado para la curva hacia arriba
-        size.width, size.height,
+        size.width / 2,
+        size.height * curveHeightFactor,
+        size.width,
+        size.height,
       )
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)

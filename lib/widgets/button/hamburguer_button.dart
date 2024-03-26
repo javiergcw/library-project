@@ -11,118 +11,106 @@ class HamburguerButton extends StatefulWidget {
 }
 
 class HamburguerButtonState extends State<HamburguerButton> {
+  OverlayEntry? _overlayEntry;
   bool isExpanded = false;
-  int? hoveredIndex;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  void _toggleMenu() {
-    setState(() {
-      isExpanded = !isExpanded;
-    });
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    super.dispose();
+  }
+
+  void _toggleMenu(Color? color) {
+    if (isExpanded) {
+      _overlayEntry?.remove();
+    } else {
+      _overlayEntry = _createOverlayEntry(color);
+      Overlay.of(context).insert(_overlayEntry!);
+      // Añade los ítems al AnimatedList después de un breve retraso para permitir que el Overlay se renderice
+      Future.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          widget.menuItems.asMap().forEach(
+            (index, item) {
+              _listKey.currentState?.insertItem(
+                index,
+                duration: const Duration(
+                  milliseconds: 200,
+                ),
+              );
+            },
+          );
+        },
+      );
+    }
+    isExpanded = !isExpanded;
+  }
+
+  OverlayEntry _createOverlayEntry(
+    Color? color,
+  ) {
+    var size = MediaQuery.of(context).size;
+    var width =
+        size.width > 600 ? 300 : size.width * 0.8; // Ajuste de ancho responsive
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        right: 20,
+        top: 60, // Ajusta esta posición según sea necesario
+        width: width.toDouble(), // Ancho del menú desplegable
+        child: Material(
+          elevation: 4.0,
+          child: AnimatedList(
+            key: _listKey,
+            initialItemCount: 0, // Comienza con 0 y añade ítems dinámicamente
+            shrinkWrap: true,
+            itemBuilder: (context, index, animation) {
+              final item = widget.menuItems[index];
+              return SlideTransition(
+                position: animation.drive(
+                    Tween(begin: const Offset(1, 0), end: const Offset(0, 0))),
+                child: ListTile(
+                  title: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: color,
+                        ),
+                  ),
+                  onTap: () {
+                    _toggleMenu(color);
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).primaryColor;
+    final colorPrimary = Theme.of(context).primaryColor;
 
-    // Ajustes para calcular la altura necesaria
-    const itemHeight = 55.0; // Altura estimada por ítem
-    const titleHeight =
-        20.0; // Espacio para el título "Conozca más" y el espacio alrededor
-    const dividerHeight = 10.0; // Altura para el divisor
-    final calculatedHeight =
-        itemHeight * widget.menuItems.length + titleHeight + dividerHeight;
-
-    return Stack(
-      alignment: Alignment.bottomRight,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.fastOutSlowIn,
-          width: isExpanded ? 300 : 56,
-          // Usamos calculatedHeight para determinar la altura del contenedor
-          height: isExpanded ? calculatedHeight : 56,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            color: color,
+    return Container(
+      // Contenedor del botón de hamburguesa
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        onTap: () => _toggleMenu(colorPrimary), // Cambio realizado aquí
+        child: Center(
+          child: Icon(
+            Icons.menu,
+            color: colorPrimary,
+            size: 24,
           ),
-          child: isExpanded
-              ? SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                        onTap: _toggleMenu,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.close, color: Colors.white),
-                            Text(
-                              'Conozca más',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Divider(color: Colors.white.withOpacity(0.5)),
-                      ...List.generate(widget.menuItems.length, (index) {
-                        final item = widget.menuItems[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: MouseRegion(
-                            onEnter: (_) =>
-                                setState(() => hoveredIndex = index),
-                            onExit: (_) => setState(() => hoveredIndex = null),
-                            child: Material(
-                              color: hoveredIndex == index
-                                  ? Colors.white
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(22),
-                              child: InkWell(
-                                onTap: () {
-                                  print('Tapped on ${item.link}');
-                                },
-                                borderRadius: BorderRadius.circular(22),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Text(
-                                      item.title,
-                                      style: TextStyle(
-                                        color: hoveredIndex == index
-                                            ? color
-                                            : Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: color,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.menu, color: Colors.white),
-                    onPressed: _toggleMenu,
-                  ),
-                ),
         ),
-      ],
+      ),
     );
   }
 }

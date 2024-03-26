@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:project_library/core/res/res.dart';
+import 'package:project_library/core/responsive/section/icon_size_responsive.dart';
+import 'package:project_library/core/responsive/section/text_size_responsive.dart';
 
 class CardSection extends StatelessWidget {
   final IconData icon;
@@ -18,7 +21,11 @@ class CardSection extends StatelessWidget {
     Color backgroundColor = isActive ? primaryColor : Colors.white;
     Color contentColor = isActive ? Colors.white : primaryColor;
 
+    double iconSize = getIconSize(context);
+    double textSize = getTextSize(context);
+
     return Container(
+      height: 140,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(10),
@@ -26,24 +33,32 @@ class CardSection extends StatelessWidget {
             ? []
             : [
                 BoxShadow(
-                  color: primaryColor,
-                  spreadRadius: 0.4,
-                  blurRadius: 8,
-                  offset: const Offset(0, 8), // changes position of shadow
+                  color: primaryColor.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
                 ),
               ],
       ),
       padding: const EdgeInsets.all(8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: contentColor),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(color: contentColor),
-          ),
-        ],
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: contentColor,
+              size: iconSize, // Ajustando el tamaño del ícono
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                color: contentColor,
+                fontSize: textSize, // Ajustando el tamaño del texto
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

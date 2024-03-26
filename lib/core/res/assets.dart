@@ -1,11 +1,12 @@
 part of lib.core.res;
 
 abstract class Assets {
-  static const _images = 'assets';
+  static const assets = 'assets';
 
-  static const images = '$_images/images';
+  static const images = '$assets/images';
+  static const flags = '$images/flags';
 
   // MARK: Images
-  static const String cameraBackgroundLoaderSVG =
-      '$images/camera_background_loader.svg';
+  static const String flagColombia = '$flags/colombia.png';
+  static const String flagReinoUnido= '$flags/reino-unido.png';
 }

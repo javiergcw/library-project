@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_library/models/menu_item.dart';
+import 'package:project_library/functions/launch_url.dart';
+import 'package:project_library/data/models/menu_item.dart';
 
 class HamburguerButton extends StatefulWidget {
   final List<MenuItem> menuItems;
@@ -71,14 +72,21 @@ class HamburguerButtonState extends State<HamburguerButton> {
                 position: animation.drive(
                     Tween(begin: const Offset(1, 0), end: const Offset(0, 0))),
                 child: ListTile(
+                  leading: Icon(item.icon, color: color),
                   title: Text(
                     item.title,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: color,
                         ),
                   ),
-                  onTap: () {
+                  onTap: () async {
+                    // Aquí se cierra el menú antes de redirigir
                     _toggleMenu(color);
+                    launchURL(item.link).catchError((error) {
+                      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+                      debugPrint('Error al lanzar la URL: $error');
+                      
+                    });
                   },
                 ),
               );

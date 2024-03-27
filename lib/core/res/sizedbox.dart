@@ -7,6 +7,7 @@ class UISizedBox {
   static const gapH10 = SizedBox(height: 10);
   static const gapH18 = SizedBox(height: 18);
   static const gapH20 = SizedBox(height: 20);
+  static const gapH25 = SizedBox(height: 25);
   static const gapH30 = SizedBox(height: 30);
   static const gapH40 = SizedBox(height: 40);
   static const gapH50 = SizedBox(height: 50);

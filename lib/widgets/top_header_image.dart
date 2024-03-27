@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:project_library/core/res/res.dart';
 import 'package:project_library/core/responsive/header/curvature_responsive.dart';
 import 'package:project_library/core/responsive/header/position_responsive.dart';
-import 'package:project_library/models/menu_item.dart';
+import 'package:project_library/data/models/menu_item.dart';
 import 'package:project_library/widgets/button/hamburguer_button.dart';
 import 'package:project_library/widgets/button/language_toggle_button.dart';
 import 'package:project_library/widgets/title/main_title.dart';
@@ -47,12 +47,15 @@ class TopHeaderImage extends StatelessWidget {
                 HamburguerButton(
                   menuItems: [
                     MenuItem(
-                      title: 'Google',
-                      link: 'https://google.com',
+                      title: 'Linkedin',
+                      link:
+                          'https://www.linkedin.com/in/javier-garcia-carrillo-301360240/',
+                      icon: Icons.person,
                     ),
                     MenuItem(
-                      title: 'Flutter',
-                      link: 'https://flutter.dev',
+                      title: 'Contactanos',
+                      link: 'https://www.linkedin.com/in/javier-garcia-carrillo-301360240/',
+                      icon: Icons.phone,
                     ),
                   ],
                 ),
